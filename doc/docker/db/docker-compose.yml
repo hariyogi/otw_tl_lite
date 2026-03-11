@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: otw_tl_lite
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root12345
+      MYSQL_DATABASE: otw_tl_lite_dev
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin12345
+    volumes:
+      - otw_tl_lite_mysql_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+
+volumes:
+  otw_tl_lite_mysql_data:

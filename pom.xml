@@ -7,6 +7,13 @@
     <packaging>quarkus</packaging>
 
     <properties>
+        <flyway-plugin-version>12.1.0</flyway-plugin-version>
+        <jooq-version>3.20.11</jooq-version>
+        <jooq-mysql-connector-version>9.6.0</jooq-mysql-connector-version>
+        <db-user>admin</db-user>
+        <db-password>admin12345</db-password>
+        <db-name>otw_tl_lite_dev</db-name>
+        <db-url>jdbc:mysql://localhost:3306/${db-name}</db-url>
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,8 +40,25 @@
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-client-jackson</artifactId>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.jooq/jooq -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq-version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>io.quarkiverse.jooq</groupId>
             <artifactId>quarkus-jooq</artifactId>
@@ -124,6 +148,63 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <!--     Flyway       -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway-plugin-version}</version>
+                <configuration>
+                    <url>${db-url}</url>
+                    <user>${db-user}</user>
+                    <password>${db-password}</password>
+                </configuration>
+            </plugin>
+            <!--     JOOQ Code Gen       -->
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mysql</groupId>
+                        <artifactId>mysql-connector-j</artifactId>
+                        <version>${jooq-mysql-connector-version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <jdbc>
+                        <driver>com.mysql.cj.jdbc.Driver</driver>
+                        <url>${db-url}</url>
+                        <user>${db-user}</user>
+                        <password>${db-password}</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.mysql.MySQLDatabase</name>
+                            <includes>.*</includes>
+                            <inputSchema>${db-name}</inputSchema>
+                            <forcedTypes>
+                                <forcedType>
+                                    <name>BOOLEAN</name>
+                                    <includeTypes>(?i:(TINY|SMALL|MEDIUM|BIG)?INT(UNSIGNED)?\(1\))</includeTypes>
+                                </forcedType>
+                            </forcedTypes>
+                        </database>
+                        <target>
+                            <packageName>com.dimata.gen</packageName>
+                            <directory>target/generated-sources/jooq</directory>
+                        </target>
+                    </generator>
+
                 </configuration>
             </plugin>
         </plugins>

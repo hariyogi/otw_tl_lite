@@ -1,2 +1,9 @@
+quarkus:
+  jooq:
+    dialect: MySql
+  flyway:
+    migrate-at-start: false
+    repair-at-start: false
+
 greeting:
   message: "hello"

@@ -1,0 +1,36 @@
+-- V1__Init_Schema.sql
+
+CREATE TABLE users
+(
+    id         VARCHAR(36) PRIMARY KEY,
+    name       VARCHAR(255) NOT NULL,
+    email      VARCHAR(255) NOT NULL UNIQUE,
+    password   VARCHAR(255) NOT NULL,
+    role       ENUM('USER', 'ADMIN', 'DRIVER') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE locations
+(
+    id         VARCHAR(36) PRIMARY KEY,
+    name       VARCHAR(255) NOT NULL,
+    address    TEXT         NOT NULL,
+    is_active  BOOLEAN   DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders
+(
+    id          VARCHAR(36) PRIMARY KEY,
+    user_id     VARCHAR(36) NOT NULL,
+    driver_id   VARCHAR(36),
+    location_id VARCHAR(36) NOT NULL,
+    status      ENUM('PENDING', 'ASSIGNED', 'ACCEPTED', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_orders_driver FOREIGN KEY (driver_id) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_orders_location FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE RESTRICT
+);
