@@ -1,9 +1,24 @@
+otw:
+  jwt:
+    issuer: https://otw.dimata.com
+    audience: otw
+    acc-exp: 86400
+    refresh-exp: 86400
+    sign-key: private.pem
+    ency-key: public.crt
 quarkus:
   jooq:
     dialect: MySql
   flyway:
     migrate-at-start: false
     repair-at-start: false
+mp:
+  jwt:
+    verify:
+      audiences: otw
+      issuer: https://otw.dimata.com
+      publickey:
+        location: public.crt
 
 greeting:
   message: "hello"

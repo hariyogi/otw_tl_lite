@@ -2,6 +2,9 @@ package com.dimata.controller;
 
 import com.dimata.data.body.LocationBody;
 import com.dimata.repository.LocationRepository;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -27,6 +30,7 @@ public class LocationController {
 
     @GET
     @Path("/list")
+    @PermitAll
     public List<Location> getLocationName() {
         return locationRepository.getAllLocation()
                 .stream()
@@ -37,6 +41,7 @@ public class LocationController {
     @POST
     @Path("/add")
     @Transactional
+    @Authenticated
     public String addNewLocation(LocationBody body) {
         var savedLocation = locationRepository.createNewLocation(body);
         return savedLocation.getId();
@@ -45,6 +50,7 @@ public class LocationController {
     @PUT
     @Path("/update/{id}")
     @Transactional
+    @RolesAllowed("admin")
     public void updateLocation(LocationBody body, @RestPath String id) {
         locationRepository.updateLocation(id, body);
     }
@@ -52,6 +58,7 @@ public class LocationController {
     @DELETE
     @Path("/delete/{id}")
     @Transactional
+    @RolesAllowed("admin")
     public void deleteLocation(@RestPath String id) {
         locationRepository.deleteLocation(id);
     }
