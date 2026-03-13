@@ -4,6 +4,7 @@ import com.dimata.data.body.CreateUserRequest;
 import com.dimata.data.response.UserResponse;
 import com.dimata.repository.UserRepository;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import org.jboss.resteasy.reactive.RestPath;
 
@@ -42,6 +43,7 @@ public class UserController {
 
 
     @POST
+    @Transactional
     public UserResponse create(CreateUserRequest request){
         var savedUser = userRepository.createUser(request);
         return new UserResponse(
@@ -54,6 +56,7 @@ public class UserController {
 
     @PUT
     @Path("/{id}")
+    @Transactional
     public UserResponse update(@RestPath String id, CreateUserRequest request){
         var updatedUser = userRepository.updateUser(id, request);
         return new UserResponse(
@@ -66,6 +69,7 @@ public class UserController {
 
     @DELETE
     @Path("/{id}")
+    @Transactional
     public void delete(@RestPath String id){
         userRepository.deleteUser(id);
     }
