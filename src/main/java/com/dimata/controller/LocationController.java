@@ -1,6 +1,7 @@
 package com.dimata.controller;
 
 import com.dimata.data.body.LocationBody;
+import com.dimata.data.param.LocationParam;
 import com.dimata.repository.LocationRepository;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
@@ -31,8 +32,8 @@ public class LocationController {
     @GET
     @Path("/list")
     @PermitAll
-    public List<Location> getLocationName() {
-        return locationRepository.getAllLocation()
+    public List<Location> getLocationName(@BeanParam LocationParam param) {
+        return locationRepository.getAllLocation(param)
                 .stream()
                 .map(loc -> new Location(loc.getId(), loc.getName(), loc.getAddress()))
                 .toList();

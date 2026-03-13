@@ -1,6 +1,7 @@
 package com.dimata.repository;
 
 import com.dimata.data.body.LocationBody;
+import com.dimata.data.param.LocationParam;
 import com.dimata.gen.tables.records.LocationsRecord;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,10 +18,15 @@ public class LocationRepository {
     @Inject
     DSLContext jooq;
 
-    public List<LocationsRecord> getAllLocation() {
-        return jooq
-                .selectFrom(LOCATIONS)
-                .fetch();
+    public List<LocationsRecord> getAllLocation(LocationParam param) {
+        var builder = jooq
+                .selectFrom(LOCATIONS);
+
+        if (param.name() != null) {
+            builder.where(LOCATIONS.NAME.eq(param.name()));
+        }
+
+        return builder.fetch();
     }
 
     public LocationsRecord createNewLocation(LocationBody body) {
